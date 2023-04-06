@@ -1,4 +1,5 @@
-import './globals.css'
+import 'tailwindcss/tailwind.css'
+import 'tailwind.source.css'
 
 export const metadata = {
   title: 'Create Next App',
