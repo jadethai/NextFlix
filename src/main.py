@@ -40,7 +40,7 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['Combined Text']) #returns tfidf-weighted document-term matrix
 # create matrix to determine the correlation of the movies
 cosine_sim = cosine_similarity(tfidf_matrix)
-indices = pd.Series(df.index,index=df['Title'])
+indices = pd.Series(df.index,index=df['Title'].str.lower())
 ### recommendation code ###
 
 # q = movie title
@@ -56,5 +56,4 @@ def get_recommendations(q: Union[str, None] = None):
         results.append({"Title": df['Title'].iloc[i], 
                         "Genre": df['Genre'].iloc[i], 
                         "Description": df['Description'].iloc[i]})
-    test = "print"
     return results
