@@ -7,7 +7,7 @@ import 'react-select-search/style.css'
 import './index.css';
 
 async function getRecommendations(movieName) {
-  const res = await fetch("http://127.0.0.1:8000/search?q=" + movieName)
+  const res = await fetch("https://nextflix.onrender.com/search?q=" + movieName)
   const data = await res.json();
   return data;
 }
