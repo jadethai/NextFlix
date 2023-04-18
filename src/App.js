@@ -31,7 +31,7 @@ function App() {
   return (
     <div id="root" className="flex flex-col min-h-screen bg-gradient-to-r from-red-700 to-stone-900">
       <Container>
-        <img src={process.env.PUBLIC_URL + '/logo.png'} alt="NextFlix Logo" class="w-40 h-17 mt-4" />
+        <img src={process.env.PUBLIC_URL + '/logo.png'} alt="NextFlix Logo" className="w-40 h-17 mt-4" />
         <h1 className="text-white text-center text-3xl font-mono font-medium pt-12"> Wondering what to watch NEXT? Get recommendations for your favorite Netflix Movie or TV Show! </h1>
         {/* <h3 className='text-white text-center text-1xl font-mono mt-3'>Wondering what to watch NEXT? Get recommendations for your favorite Netflix Movie or TV Show!</h3> */}
         <div className="flex justify-center mt-5">

@@ -6,6 +6,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 import pandas as pd
+import numpy as np
+
+from sentence_transformers import SentenceTransformer
+import torch
+from sentence_transformers import SentenceTransformer, util
 
 app = FastAPI()
 
@@ -41,19 +46,36 @@ tfidf_matrix = tfidf.fit_transform(df['Combined Text']) #returns tfidf-weighted 
 # create matrix to determine the correlation of the movies
 cosine_sim = cosine_similarity(tfidf_matrix)
 indices = pd.Series(df.index,index=df['Title'].str.lower())
+model = SentenceTransformer('paraphrase-distilroberta-base-v1')
+des_embeddings = np.load('description_embeddings.npy')
 ### recommendation code ###
 
 # q = movie title
 @app.get("/search")
 def get_recommendations(q: Union[str, None] = None):
-    idx = indices[q]
-    sim_scores = list(enumerate(cosine_sim[idx]))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:11]
-    movie_indices = [i[0] for i in sim_scores]
+    #Compute cosine-similarities with all embeddings 
+    query = df.loc[df['Title'].str.lower() == q]['Description'].to_list()[0]
+    query_embedd = model.encode(query)
+    cosine_scores = util.pytorch_cos_sim(query_embedd, des_embeddings)
+    top10_matches = torch.argsort(cosine_scores, dim=-1, descending=True).tolist()[0][1:11]
     results = []
-    for i in movie_indices:
+    for i in top10_matches:
         results.append({"Title": df['Title'].iloc[i], 
                         "Genre": df['Genre'].iloc[i], 
                         "Description": df['Description'].iloc[i]})
     return results
+    # return df.loc[top10_matches, ['Title', 'Description', 'Genre']]
+
+
+
+    # idx = indices[q]
+    # sim_scores = list(enumerate(cosine_sim[idx]))
+    # sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    # sim_scores = sim_scores[1:11]
+    # movie_indices = [i[0] for i in sim_scores]
+    # results = []
+    # for i in movie_indices:
+    #     results.append({"Title": df['Title'].iloc[i], 
+    #                     "Genre": df['Genre'].iloc[i], 
+    #                     "Description": df['Description'].iloc[i]})
+    # return results
